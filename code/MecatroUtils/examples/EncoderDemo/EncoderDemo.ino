@@ -17,6 +17,8 @@
 
 // Define the control loop period, in ms.
 #define CONTROL_LOOP_PERIOD 5
+#define RIGHT_ENCODER_PIN 3
+#define LEFT_ENCODER_PIN 0
 
 QWIICMUX multiplexer;
 // Wire1 is used for the Qwiic connector on this Arduino board. 
@@ -40,7 +42,7 @@ void setup()
   {
     bool isInit = true;
     // Set multiplexer to use port 0 to talk to right encoder.
-    multiplexer.setPort(3);
+    multiplexer.setPort(RIGHT_ENCODER_PIN);
     rightEncoder.begin();
     if (!rightEncoder.isConnected())
     {
@@ -48,7 +50,7 @@ void setup()
       isInit = false;
     }
     // Set multiplexer to use port 3 to talk to left encoder.
-    multiplexer.setPort(2);
+    multiplexer.setPort(LEFT_ENCODER_PIN);
     leftEncoder.begin();
     if (!leftEncoder.isConnected())
     {
@@ -81,7 +83,7 @@ void loop()
 void mecatro::controlLoop()
 {
   // Set multiplexer to use port 0 to talk to right encoder.
-  multiplexer.setPort(3);
+  multiplexer.setPort(RIGHT_ENCODER_PIN);
   Serial.print("Right encoder: raw angle ");
   // Raw encoder measurement - from 0 to 360 degrees
   Serial.print(rightEncoder.rawAngle() * AS5600_RAW_TO_DEGREES);
@@ -110,7 +112,7 @@ void mecatro::controlLoop()
   Serial.println();
 
   // Set multiplexer to use port 3 to talk to left encoder.
-  multiplexer.setPort(2);
+  multiplexer.setPort(LEFT_ENCODER_PIN);
   Serial.print("Left encoder: ");
   Serial.print(leftEncoder.rawAngle() * AS5600_RAW_TO_DEGREES);
   Serial.print("°, cumulative position ");

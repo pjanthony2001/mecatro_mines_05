@@ -76,18 +76,12 @@ namespace mecatro{
           telemetryStream = &Serial;
           return;
         }
-      // Hack for custom firmware: manually set baudrate at 2Mbps
-      modem.begin();
+      // Hack for custom firmware: manually set baudrate at 2Mbps before starting model at 2Mbps
+      Serial2.begin(115200);
       Serial2.print("AT+UART=2000000\r\n");
       Serial2.flush();
-      // Give a bit of time for the ESP32 to switch frequency.
-      delay(10);
-      Serial2.begin(2000000);
-      std::string res = "";
-      modem.write(std::string(PROMPT(_SOFTRESETWIFI)),res, "%s" , CMD(_SOFTRESETWIFI));
-      delay(5);
-      modem.write(std::string(PROMPT(_SOFTRESETWIFI)),res, "%s" , CMD(_SOFTRESETWIFI));
-      delay(5);
+      delay(10); // Give some time to the ESP-32 to switch baudrate
+      modem.begin(2000000);
 
       // Setup WiFi
       WiFi.config(IPAddress(192,168,4,1));
