@@ -1,4 +1,4 @@
-# Projets mécatro 2023 Ecole des Mines 
+# Projets mécatro Ecole des Mines 
 
 Ce repo continent divers ressources pour les deux projets de mécatronique de l'école, à savoir:
 
