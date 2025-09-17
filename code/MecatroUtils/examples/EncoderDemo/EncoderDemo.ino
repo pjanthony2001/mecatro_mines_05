@@ -17,32 +17,31 @@
 
 // Define the control loop period, in ms.
 #define CONTROL_LOOP_PERIOD 5
-
-// Define the Multiplexer pins corresponding to each encoder
-#define LEFT_ENCODER_PIN
-#define RIGHT_ENCODER_PIN
+#define RIGHT_ENCODER_PIN 3
+#define LEFT_ENCODER_PIN 0
 
 QWIICMUX multiplexer;
-AS5600 rightEncoder, leftEncoder;
+// Wire1 is used for the Qwiic connector on this Arduino board. 
+// All the devices need to be assigned to this Wire (either here (encoders) or at init (multiplexer) depending on the devices)
+AS5600 rightEncoder(&Wire1);
+AS5600 leftEncoder(&Wire1);
 
 void setup()
 {
   // Setup serial communication with the PC - for debugging and logging.
-  Serial.begin(1000000);
-  // Start I2C communication
-  Wire.begin();
-  // Set I2C clock speed to 400kHz (fast mode)
-  Wire.setClock(400000);
+  Serial.begin(230400);
+  // Start I2C communication on the QWIIC port
+  Wire1.begin();
 
-  // Init multiplexer
-  if (!multiplexer.begin())
+  // Init multiplexer. Its I2C address is 0x70, and we communicate via the QWIIC port (Wire1).
+  if (!multiplexer.begin(0x70, Wire1))
   {
     Serial.println("Error: I2C multiplexer not found. Check wiring.");
   }
   else
   {
     bool isInit = true;
-    // Set multiplexer to use port RIGHT_ENCODER_PIN to talk to right encoder.
+    // Set multiplexer to use port 0 to talk to right encoder.
     multiplexer.setPort(RIGHT_ENCODER_PIN);
     rightEncoder.begin();
     if (!rightEncoder.isConnected())
@@ -50,7 +49,7 @@ void setup()
       Serial.println("Error: could not connect to right encoder. Check wiring.");
       isInit = false;
     }
-    // Set multiplexer to use port LEFT_ENCODER_PIN to talk to left encoder.
+    // Set multiplexer to use port 3 to talk to left encoder.
     multiplexer.setPort(LEFT_ENCODER_PIN);
     leftEncoder.begin();
     if (!leftEncoder.isConnected())
@@ -61,6 +60,9 @@ void setup()
 
     if (isInit)
     {
+      // Set I2C clock speed to 400kHz (fast mode). Do it after initializing everyone so that the clock speed
+      // is not reset by a particular device. 
+      Wire1.setClock(400000);
       // Configure motor control and feedback loop call.
       mecatro::configureArduino(CONTROL_LOOP_PERIOD);
     }
@@ -109,7 +111,7 @@ void mecatro::controlLoop()
   }
   Serial.println();
 
-  // Set multiplexer to use port LEFT_ENCODER_PIN to talk to left encoder.
+  // Set multiplexer to use port 3 to talk to left encoder.
   multiplexer.setPort(LEFT_ENCODER_PIN);
   Serial.print("Left encoder: ");
   Serial.print(leftEncoder.rawAngle() * AS5600_RAW_TO_DEGREES);

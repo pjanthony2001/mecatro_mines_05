@@ -5,41 +5,34 @@
 #include "MecatroUtils.h"
 
 // Include the IMU driver
-#include "ICM_20948.h"
+#include "SparkFun_BMI270_Arduino_Library.h"
 
-#include "SparkFun_I2C_Mux_Arduino_Library.h"
-
+//Include the I2C library
+#include "Wire.h"
 
 // Define the control loop period, in ms.
 #define CONTROL_LOOP_PERIOD 5
 
 // Note that no multiplexer is used here: the IMU must be plugged into the I2C port of the Arduino directly.
-ICM20948 imu;
-QWIICMUX multiplexer;
+BMI270 imu;
 
 void setup()
 {
   // Setup serial communication with the PC - for debugging and logging.
   Serial.begin(1000000);
 
-  // Initialize telemetry
-  unsigned int const nVariables = 6;
-  String variableNames[nVariables] = {"accelX", "accelY", "accelZ", "gyroX", "gyroY", "gyroZ"};
-  mecatro::initTelemetry(nVariables, variableNames);
-  
-  Wire.begin();
-
-
-  multiplexer.begin();
-  multiplexer.setPort(4);
-  if (!imu.init())
-  {
-      Serial.println("Error communicating with IMU. Check wiring");
+  // Setup I2C communication
+  Wire1.begin();
+  if (imu.beginI2C(BMI2_I2C_PRIM_ADDR, Wire1) != BMI2_OK) {
+    Serial.println("Failed to initialize IMU!");
   }
   else
   {
-      // Configure motor control and feedback loop call.
-      mecatro::configureArduino(CONTROL_LOOP_PERIOD);
+    // Set the I2C frequency to 400 kHz. **Must be done after initializing the IMU, otherwise gets overwritten.** 
+    Wire1.setClock(400000);
+
+    // Configure motor control and feedback loop call.
+    mecatro::configureArduino(CONTROL_LOOP_PERIOD);
   }
 }
 
@@ -56,16 +49,19 @@ void loop()
 void mecatro::controlLoop()
 {
   // Read data from IMU.
-  IMUData const imuData = imu.read();
-  // On very rare occasion, the IMU reading might fail. It's best to take that into account
-  // to avoid unwanted control behavior
-  if (imuData.isValid)
-  {
-    mecatro::log(0, imuData.accelX);
-    mecatro::log(1, imuData.accelY);
-    mecatro::log(2, imuData.accelZ);
-    mecatro::log(3, imuData.gyroX);
-    mecatro::log(4, imuData.gyroY);
-    mecatro::log(5, imuData.gyroZ);
-  }
+  imu.getSensorData();
+
+  Serial.print("accelX: ");
+  Serial.println(imu.data.accelX);
+  Serial.print("accelY: ");
+  Serial.println(imu.data.accelY);
+  Serial.print("accelZ: ");
+  Serial.println(imu.data.accelZ);
+  Serial.print("gyroX: ");
+  Serial.println(imu.data.gyroX);
+  Serial.print("gyroY: ");
+  Serial.println(imu.data.gyroY);
+  Serial.print("gyroZ: ");
+  Serial.println(imu.data.gyroZ);
+
 }

@@ -80,11 +80,7 @@ Le dimensionnement pour le projet du pendule inverse est plus difficile à réal
 De nombreux fabricants de petits motoréducteurs existent: ceux que je connais le plus sont Pololu, ServoCity, MFA ; bon nombre sont distribués sur Gotronic ou Robotshop, qui sont des bons endroits où commencer à chercher.
 
 
-De facon assez arbitraire, je propose de commencer par la gamme de [moteur 37mm de Pololu](https://www.pololu.com/category/116/37d-metal-gearmotors): il s'agit du même moteur monté sur un réducteur à engrenages droits. Très peu cher, mon expérience reste celle d'un randement assez moyen - moins bon que ce que j'ai pu trouver chez des moteurs avec train épicycloidal de Servocity par exemple - mais, je pense, suffisant pour réaliser ces projets. Plus précisemment, je propose de prendre
-
- - le [4742](https://www.pololu.com/product/4742) avec un rapport de réduction de 30 pour la voiture: 330rpm a vide, 280rpm, 1.8kgm.com @ max efficiency
-
- - le [4743](https://www.pololu.com/product/4743) avec un rapport de réduction de 50 pour le pendule inverse:, 100 rpm, 10kg.cm @ max power
+De facon assez arbitraire, je propose de commencer par la gamme de [moteur 37mm de Pololu](https://www.pololu.com/category/116/37d-metal-gearmotors): il s'agit du même moteur monté sur un réducteur à engrenages droits. Très peu cher, mon expérience reste celle d'un randement assez moyen - moins bon que ce que j'ai pu trouver chez des moteurs avec train épicycloidal de Servocity par exemple - mais, je pense, suffisant pour réaliser ces projets. Plus précisemment, je propose de prendre le [4743](https://www.pololu.com/product/4743) avec un rapport de réduction de 50 pour le pendule inverse:, 100 rpm, 10kg.cm @ max power
 
 
 ## Controleur de moteur
