@@ -7,3 +7,4 @@ Ce repo continent divers ressources pour les deux projets de mécatronique de l'
 
 Le dossier *code* contient la bibliothèque *MecatroUtils*, base de tous les projets à distribuer aux élèves, ainsi qu'une librairie custom pour le capteur suiveur de ligne.
 Le dossier mecatro_telemetry contient les scripts Matlab permettant de récupérer les données envoyées par la carte Arduino, formattées par la librairie MecatroUtils.
+HI THIS IS ANTHONY
