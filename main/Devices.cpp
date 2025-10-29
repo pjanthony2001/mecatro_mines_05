@@ -120,7 +120,7 @@ bool IMU_BMI270::readData(DEVICE_DATA& dataStruct) {
 
 
 void DEVICE_DATA::writeBytes(uint8_t *dataBuffer) {
-
+    for (int i = 0; i < )
 
 }
 

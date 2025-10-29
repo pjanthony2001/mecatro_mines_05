@@ -70,7 +70,9 @@ void setup() {
 
 void loop() {
   if (isSampleFlag()) {
-    // Sample s = constructSample(mux, imu, magSensorLeft, magSensorRight);
+    DEVICE_DATA s = constructDeviceSample(mux, imu, magSensorLeft, magSensorRight);
+    
+
     // Sample s;
     // float data[2];
     // data[0] = 10.0;
