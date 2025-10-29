@@ -1,0 +1,21 @@
+DEBUG: AP is online !
+DEBUG: Servers started. Waiting for client to connect
+DEBUG: MUX Initialisation success: 1
+DEBUG: IMU Initialisation success: 0
+DEBUG: MagSensorLeft Initialisation success: 0
+DEBUG: MagSensorRight Initialisation success: 0
+DEBUG: Creating access point named: Group5Mecatro
+DEBUG: AP started
+DEBUG: IP Address: 192.168.4.1
+DEBUG: AP is online !
+DEBUG: Servers started. Waiting for client to connect
+DEBUG: MUX Initialisation success: 1
+DEBUG: I AM HERE
+DEBUG: IMU Initialisation success: 0
+DEBUG: MagSensorLeft Initialisation success: 0
+DEBUG: MagSensorRight Initialisation success: 0
+DEBUG: Creating access point named: Group5Mecatro
+DEBUG: AP started
+DEBUG: IP Address: 192.168.4.1
+DEBUG: AP is online !
+DEBUG: Servers started. Waiting for client to connect
