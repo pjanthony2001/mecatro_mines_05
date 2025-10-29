@@ -3,9 +3,7 @@
 #include "Parameters.h"
 #include "Sample.h"
 
-#include "MUX_TCA.h"
-#include "IMU_BMI270.h"
-#include "AS6500.h"
+#include "Devices.h"
 #include "Motor.h"
 
 WiFiUDP_AP wifiAP = WiFiUDP_AP(SSID, PASSWORD);
