@@ -9,8 +9,8 @@
 WiFiUDP_AP wifiAP = WiFiUDP_AP(SSID, PASSWORD);
 MUX_TCA mux = MUX_TCA();
 IMU_BMI270 imu = IMU_BMI270();
-AS5600 magSensorLeft = AS5600();
-AS5600 magSensorRight = AS5600();
+LeftAS5600 magSensorLeft = LeftAS5600();
+RightAS5600 magSensorRight = RightAS5600();
 CircularBuffer<Sample> sampleBuffer = CircularBuffer<Sample>(BUFFER_SIZE);
 
 volatile unsigned long startTime; // IN MILLISECONDS SINCE LOOP STARTED

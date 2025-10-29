@@ -11,8 +11,7 @@ struct Sample {
   uint8_t buffer[SAMPLE_BYTE_SIZE];
 };
 
-Sample constructSample(MUX_TCA& mux, IMU_BMI270& imu, AS5600& magSensorLeft, AS5600& magSensorRight);
-
+DEVICE_DATA constructSample(MUX_TCA& mux, IMU_BMI270& imu, LeftAS5600& magSensorLeft, RightAS5600& magSensorRight);
 
 
 #endif

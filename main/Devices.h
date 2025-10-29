@@ -9,17 +9,48 @@
 
 constexpr float SENSOR_RAW_TO_RADS = (2 * M_PI) / ((2ul << 12)); // I am assuming that the [0, 2pi) range is stored as 12 bits in the ANGLE register
 
+
+struct DEVICE_DATA {
+
+    /// SAMPLE STRUCTURE : [sampleTime][gyroData][accelData][leftEncoder][rightEncoder][0][0][0]
+
+    unsigned long sampleTime;
+
+    float gyroData[3];
+    float accelData[3];
+
+    uint16_t leftEncoderData;
+    uint16_t rightEncoderData;
+
+    uint8_t fmt = 0; // FORMAT TO DECODE
+    
+    bool isValid = true;
+
+    void writeBytes(uint8_t* dataBuffer);
+    size_t computeDataSize();
+    
+};
+
+
 class AS5600 {
     // A wrapper for the AS5600 Adafruit class
     public:
         bool init();
-        uint16_t read();
 
-    private:
+    protected:
         Adafruit_AS5600 as5600;
 };
 
 
+class LeftAS5600: public AS5600{
+    public:
+        bool read(DEVICE_DATA& dataStruct);
+};
+
+class RightAS5600: public AS5600{
+    public:
+        bool read(DEVICE_DATA& dataStruct);
+};
 
 class MUX_TCA { //Wrapper for Sparkfun Libraries Mux
     public:
@@ -36,11 +67,15 @@ class IMU_BMI270 {
     // A wrapper for the BMI270 Adafruit class
     public:
         bool init();
-        bool readGyro(uint8_t* bufferPtr);
-        bool readAcc(uint8_t* bufferPtr);
-        bool readData(uint8_t* bufferPtr);
+        bool readGyro(DEVICE_DATA& dataStruct);
+        bool readAcc(DEVICE_DATA& dataStruct);
+        bool readData(DEVICE_DATA& dataStruct);
+
     private:
         BMI270 imu;
+        bool getSensorData();
 };
+
+
 
 #endif
