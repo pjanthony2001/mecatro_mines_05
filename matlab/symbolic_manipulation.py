@@ -61,6 +61,10 @@ C = symbols('C0:8')
 
 eq8 = Eq(i_plus, C[0] * nu + C[1] * theta_dot + C[2] * U_plus)
 
-print(eq2_1.subs(eq8.lhs, eq8.rhs))
+eq9 = eq6.subs([(eq4_1.lhs, eq4_1.rhs)])
+
+
+print(eq9.rhs.as_poly(theta_dot).all_coeffs())
+print(eq2_1.subs((eq8.lhs, eq8.rhs)))
 
 
