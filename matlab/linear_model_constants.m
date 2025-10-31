@@ -126,6 +126,10 @@ xlabel('Time (s)');
 ylabel('Output Response');
 title('System Response to Initial Condition');
 
+D(3, 3)
+p_K = [-0.1, D(2, 2), 10 * r_K(1), 10 * r_K(2)];
+
+K = place(A, B, p_K);
 
 % Calculate the closed-loop system response with the state feedback
 [y_cl, t_cl, x_cl] = lsim(ss(A - B * K, B, [0 0 1 0], 0), u, t, X_0); % Simulate closed-loop response
@@ -140,10 +144,6 @@ plot(t_cl, (- K * x_cl')');
 
 
 Pol  = pole(sys);
-D(3, 3)
-p_K = [-0.1, D(2, 2), 10 * r_K(1), 10 * r_K(2)];
-
-K = place(A, B, p_K);
 
 bessel_poly = [1 6 15 15];
 observer_scale = 2;
