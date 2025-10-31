@@ -115,7 +115,6 @@ xlabel('Time (s)');
 ylabel('Output Response');
 title('System Response to Initial Condition');
 
-
 damping = 0.5;
 resonant_freq = sqrt(g / d);
 damping_poly = [1 (2 * damping * resonant_freq) (resonant_freq * resonant_freq)];
@@ -129,7 +128,6 @@ p_K = [-0.1, D(2, 2), scale * r_K(1), scale * r_K(2)];
 
 K = place(A, B, p_K)
 
-
 % Calculate the closed-loop system response with the state feedback
 [y_cl, t_cl, x_cl] = lsim(ss(A - B * K, B, [0 0 1 0], 0), u, t, X_0); % Simulate closed-loop response
 figure(2)
@@ -140,6 +138,8 @@ title('Closed-Loop System Response to Initial Condition');
 
 figure(3)
 plot(t_cl, (- K * x_cl')');
+
+
 
 
 bessel_poly = [1 6 15 15];
@@ -168,5 +168,4 @@ M_1 = [0 1 0 0
        0 0 0 1
        0 D_1 0 -rho * D_1];
 
-inv(M_0) * M_1
-[V_, D_] = eig(inv(M_0) * M_1)
+eig(inv(M_0) * M_1)
