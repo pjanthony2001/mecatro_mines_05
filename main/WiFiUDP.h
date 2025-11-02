@@ -3,6 +3,7 @@
 
 #include "Message.h"
 #include "CircularSampleBuffer.h"
+#include "Devices.h"
 #include "Sample.h"
 
 #include <WiFiS3.h>
@@ -15,7 +16,7 @@ public:
         const char* password);
 
     void begin();
-    void sendBatch(CircularBuffer<Sample>& buffer);
+    void sendBatch(CircularBuffer<DEVICE_DATA>& buffer);
     void checkHandshake();
     bool statusChanged();
     bool isAPOnline();

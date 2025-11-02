@@ -42,9 +42,9 @@ void WiFiUDP_AP::begin() {
 }
 
 
-void WiFiUDP_AP::sendBatch(CircularBuffer<Sample>& buffer) {
+void WiFiUDP_AP::sendBatch(CircularBuffer<DEVICE_DATA>& buffer) {
   // The client should be connected before sending a batch
-  Sample batch[SAMPLE_BATCH_SIZE];
+  DEVICE_DATA batch[SAMPLE_BATCH_SIZE];
   if (buffer.available() >= SAMPLE_BATCH_SIZE) {
       buffer.popBatch(batch, SAMPLE_BATCH_SIZE);
       udpServer.beginPacket(clientIP, CLIENT_UDP_PORT);

@@ -36,6 +36,7 @@ bool LeftAS5600::read(DEVICE_DATA& dataStruct) {
     }
 
     dataStruct.leftEncoderData = as5600.getAngle();
+    dataStruct.fmt |= 0b00001000;
     return true;
 }
 
@@ -45,6 +46,7 @@ bool RightAS5600::read(DEVICE_DATA& dataStruct) {
     }
 
     dataStruct.rightEncoderData = as5600.getAngle();
+    dataStruct.fmt |= 0b00000100;
     return true;
 }
 
@@ -120,10 +122,66 @@ bool IMU_BMI270::readData(DEVICE_DATA& dataStruct) {
 
 
 void DEVICE_DATA::writeBytes(uint8_t *dataBuffer) {
-    for (int i = 0; i < )
+  size_t curr_idx = 0;
 
+  if ((fmt >> 7) & 1) {
+    memcpy(dataBuffer + curr_idx, &sampleTime, 4);
+    curr_idx += 4;
+  } 
+
+  if ((fmt >> 6) & 1) {
+    memcpy(dataBuffer + curr_idx, (uint8_t*) gyroData, 12);
+    curr_idx += 12;
+  }
+  
+  if ((fmt >> 5) & 1) {
+    memcpy(dataBuffer + curr_idx, (uint8_t*) accelData, 12);
+    curr_idx += 12;
+  }
+
+  if ((fmt >> 4) & 1) {
+    memcpy(dataBuffer + curr_idx, &leftEncoderData, 2);
+    curr_idx += 2;
+  }
+
+  if ((fmt >> 3) & 1) {
+    memcpy(dataBuffer + curr_idx, &rightEncoderData, 2);
+    curr_idx += 2;  
+  }
+  
 }
 
-size_t DEVICE_DATA::computeDataSize() {
+void DEVICE_DATA::setSampleTime(unsigned long sampleTime) {
+  this->sampleTime = sampleTime;
+  this->fmt |= 0b10000000; 
+}
 
+
+
+size_t DEVICE_DATA::computeDataSize() {
+  /// SAMPLE STRUCTURE : [sampleTime][gyroData][accelData][leftEncoder][rightEncoder][0][0][0]
+
+  size_t total = 0;
+
+  if ((fmt >> 3) & 1) {
+    total += 2;
+  }
+
+  if ((fmt >> 4) & 1) {
+    total += 2;
+  }
+
+  if ((fmt >> 5) & 1) {
+    total += 12;
+  }
+
+  if ((fmt >> 6) & 1) {
+    total += 12;
+  }
+
+  if ((fmt >> 7) & 1) {
+    total += 4;
+  }
+
+  return total;
 }

@@ -28,6 +28,7 @@ struct DEVICE_DATA {
 
     void writeBytes(uint8_t* dataBuffer);
     size_t computeDataSize();
+    void setSampleTime(unsigned long sampleTime);
     
 };
 

@@ -44,7 +44,7 @@ constexpr int computeSampleByteSize(const SampleDataType* sampleStructure, const
 }
 
 constexpr size_t NUM_SAMPLES = 1;
-constexpr SampleDataType SAMPLE_STRUCTURE[NUM_SAMPLES] = {IMU_DATA}; // TODO: ADD A LOGGING BYTE6
+constexpr SampleDataType SAMPLE_STRUCTURE[NUM_SAMPLES] = {LEFT_AS6500_DATA}; // TODO: ADD A LOGGING BYTE6
 // WARNING I HAVE NOT MAKE IT ADAPTIVE TO ANY PLACEMENT OF FLOAT DATA, for now add all float data to the front of the sample structure
 constexpr int SAMPLE_BYTE_SIZE = computeSampleByteSize(SAMPLE_STRUCTURE, NUM_SAMPLES);
 
