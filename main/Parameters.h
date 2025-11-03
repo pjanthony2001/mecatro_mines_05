@@ -65,7 +65,7 @@ constexpr int computeDataSize(const uint8_t& fmt) {
 
 /// DEVICE SAMPLE STRUCTURE : [sampleTime][gyroData][accelData][leftEncoder][rightEncoder][0][0][0]
 
-constexpr uint8_t DEVICE_SAMPLE_FMT = 0b00000000;
+constexpr uint8_t DEVICE_SAMPLE_FMT = 0b10010000;
 constexpr int SAMPLE_BYTE_SIZE = computeDataSize(DEVICE_SAMPLE_FMT);
 
 
@@ -80,7 +80,7 @@ constexpr int CLIENT_UDP_PORT = 1234;
 
 constexpr unsigned int MESSAGE_INTERVAL = 200; // in milliseconds, the interval to check messages, should be more than is sent by the client
 constexpr unsigned int CONTROL_INTERVAL = 1; // in milliseconds, the interval to update control commands if necessary, and maybe sensor data is logged??
-constexpr float SAMPLE_INTERVAL = 50; // in milliseconds, the interval to check my sampling devices (The highest ODR is 800Hz, but 400Hz is okay.)
+constexpr float SAMPLE_INTERVAL = 5; // in milliseconds, the interval to check my sampling devices (The highest ODR is 800Hz, but 400Hz is okay.)
 
 constexpr unsigned long HEARTBEAT_TIMEOUT = 10000; // in milliseconds, the interval consider a connection is closed
 
@@ -91,6 +91,9 @@ constexpr int MAX_MESSAGE_SIZE = MAX_MESSAGE_DATA_SIZE + 2; //to account for the
 
 // COMMUNICATION MODE
 constexpr CommMode commMode = CommMode::USB;
+
+// CONTROL PARAMETERS
+
 
 
 
