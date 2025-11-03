@@ -2,6 +2,7 @@
 #define TELEMETRY_PARAMETERS
 
 #include <Arduino.h>
+#include "Devices.h"
 
 enum CommMode {
     USB,
@@ -34,19 +35,38 @@ constexpr SampleDataType RIGHT_AS6500_DATA{4, 2};
 constexpr SampleDataType FLOAT_DATA{5, 4};
 
 
-constexpr int computeSampleByteSize(const SampleDataType* sampleStructure, const size_t nSamples) {
-  int sampleSize = 0;
-  for (int i = 0; i < nSamples; i++) {
-    sampleSize += sampleStructure[i].byteSize;
+constexpr int computeDataSize(const uint8_t& fmt) {
+  /// SAMPLE STRUCTURE : [sampleTime][gyroData][accelData][leftEncoder][rightEncoder][0][0][0]
+
+  int total = 0;
+
+  if ((fmt >> 3) & 1) {
+    total += 2;
   }
 
-  return sampleSize;
+  if ((fmt >> 4) & 1) {
+    total += 2;
+  }
+
+  if ((fmt >> 5) & 1) {
+    total += 12;
+  }
+
+  if ((fmt >> 6) & 1) {
+    total += 12;
+  }
+
+  if ((fmt >> 7) & 1) {
+    total += 4;
+  }
+
+  return total;
 }
 
-constexpr size_t NUM_SAMPLES = 1;
-constexpr SampleDataType SAMPLE_STRUCTURE[NUM_SAMPLES] = {LEFT_AS6500_DATA}; // TODO: ADD A LOGGING BYTE6
-// WARNING I HAVE NOT MAKE IT ADAPTIVE TO ANY PLACEMENT OF FLOAT DATA, for now add all float data to the front of the sample structure
-constexpr int SAMPLE_BYTE_SIZE = computeSampleByteSize(SAMPLE_STRUCTURE, NUM_SAMPLES);
+/// DEVICE SAMPLE STRUCTURE : [sampleTime][gyroData][accelData][leftEncoder][rightEncoder][0][0][0]
+
+constexpr uint8_t DEVICE_SAMPLE_FMT = 0b00000000;
+constexpr int SAMPLE_BYTE_SIZE = computeDataSize(DEVICE_SAMPLE_FMT);
 
 
 constexpr char16_t SAMPLE_BATCH_SIZE = 5;

@@ -22,12 +22,11 @@ struct USBTelemetry {
     uint8_t batchBuffer[SAMPLE_BATCH_SIZE * SAMPLE_BYTE_SIZE];
     if (deviceSampleBuffer.available() >= SAMPLE_BATCH_SIZE) {
         deviceSampleBuffer.popBatch(batch, SAMPLE_BATCH_SIZE);
-
         for (int i = 0; i < SAMPLE_BATCH_SIZE; i++) {
-            batch[i].writeBytes(batchBuffer + i * SAMPLE_BATCH_SIZE);
+            batch[i].writeBytes(batchBuffer + i * SAMPLE_BYTE_SIZE);
         }
-
-        printData((uint8_t*) batchBuffer, sizeof(batch));
+        
+        printData((uint8_t*) batchBuffer, SAMPLE_BATCH_SIZE * SAMPLE_BYTE_SIZE);
     } 
   }
 };

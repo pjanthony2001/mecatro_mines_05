@@ -4,34 +4,28 @@
 DEVICE_DATA constructDeviceSample(MUX_TCA& mux, IMU_BMI270& imu, LeftAS5600& magSensorLeft, RightAS5600& magSensorRight) {
   DEVICE_DATA sample;
   
-  for (int i = 0; i < NUM_SAMPLES; i++) {
-    switch (SAMPLE_STRUCTURE[i]) {
-      case IMU_DATA : {
-        mux.setPort(0);
-        if (!imu.readData(sample)) sample.isValid = false;
-      } break;
+  if ((DEVICE_SAMPLE_FMT >> 7) & 1) {
+    sample.setSampleTime(millis());
+  } 
 
-      case IMU_ACC : {
-        mux.setPort(0);
-        if (!imu.readAcc(sample)) sample.isValid = false;
-      } break;
+  if (((DEVICE_SAMPLE_FMT >> 6) & 1) && ((DEVICE_SAMPLE_FMT >> 5) & 1)) {
+    mux.setPort(0);
+    if (!imu.readData(sample)) sample.isValid = false;
+  } else if ((DEVICE_SAMPLE_FMT >> 5) & 1) {
+    mux.setPort(0);
+    if (!imu.readAcc(sample)) sample.isValid = false;
+  } else if ((DEVICE_SAMPLE_FMT >> 6) & 1) {
+    mux.setPort(0);
+    if (!imu.readGyro(sample)) sample.isValid = false;
+  }
 
 
-      case IMU_GYRO : {
-        mux.setPort(0);
-        if (!imu.readAcc(sample)) sample.isValid = false;
-      } break;
+  if ((DEVICE_SAMPLE_FMT >> 4) & 1) {
+    if (!magSensorLeft.read(sample)) sample.isValid = false;
+  }
 
-      case LEFT_AS6500_DATA : {
-        mux.setPort(1);
-        if (!magSensorLeft.read(sample)) sample.isValid = false;
-      } break;
-
-      case RIGHT_AS6500_DATA : {
-        mux.setPort(2);
-        if (!magSensorRight.read(sample)) sample.isValid = false;
-      } break;
-    }
+  if ((DEVICE_SAMPLE_FMT >> 3) & 1) {
+    if (!magSensorRight.read(sample)) sample.isValid = false;
   }
 
   return sample;

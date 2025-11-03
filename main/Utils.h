@@ -43,4 +43,15 @@ inline void printData(uint8_t* buffer, size_t size) {
     Serial.flush();
 }
 
+
+inline void printDataDebug(uint8_t* buffer, size_t size) {
+    Serial.print("DEBUG: ");
+    for (size_t i = 0; i < size; i++) {
+        if (buffer[i] < 16) Serial.print('0'); // pad single-digit hex
+        Serial.print(buffer[i], HEX);
+    }
+    Serial.println();
+    Serial.flush();
+}
+
 #endif

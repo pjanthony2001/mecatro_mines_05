@@ -1,7 +1,6 @@
 #include "Devices.h"
 #include "Utils.h"
 #include "Wire.h"
-#include "Parameters.h"
 #include <SparkFun_I2C_Mux_Arduino_Library.h> 
 
 
@@ -36,7 +35,7 @@ bool LeftAS5600::read(DEVICE_DATA& dataStruct) {
     }
 
     dataStruct.leftEncoderData = as5600.getAngle();
-    dataStruct.fmt |= 0b00001000;
+    dataStruct.fmt |= 0b00010000;
     return true;
 }
 
@@ -46,7 +45,7 @@ bool RightAS5600::read(DEVICE_DATA& dataStruct) {
     }
 
     dataStruct.rightEncoderData = as5600.getAngle();
-    dataStruct.fmt |= 0b00000100;
+    dataStruct.fmt |= 0b00001000;
     return true;
 }
 
@@ -158,30 +157,4 @@ void DEVICE_DATA::setSampleTime(unsigned long sampleTime) {
 
 
 
-size_t DEVICE_DATA::computeDataSize() {
-  /// SAMPLE STRUCTURE : [sampleTime][gyroData][accelData][leftEncoder][rightEncoder][0][0][0]
 
-  size_t total = 0;
-
-  if ((fmt >> 3) & 1) {
-    total += 2;
-  }
-
-  if ((fmt >> 4) & 1) {
-    total += 2;
-  }
-
-  if ((fmt >> 5) & 1) {
-    total += 12;
-  }
-
-  if ((fmt >> 6) & 1) {
-    total += 12;
-  }
-
-  if ((fmt >> 7) & 1) {
-    total += 4;
-  }
-
-  return total;
-}
