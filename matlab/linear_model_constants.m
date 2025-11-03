@@ -15,8 +15,8 @@ rho = 0.050 ; %position verticale(rayon du roue)
 d_i = 0.100 ; %Distance verticale entre l'IMU et l'axe des roues
 
 L = 0 ; %Inductance des moteurs 
-R = 2 ; %Resistance des moteurs
-k = 0.38 ; %Constante de couple
+R = 2.181818 ; %Resistance des moteurs
+k = 0.3346 ; %Constante de couple
 
 g = 9.81; %constante de gravitation
 
@@ -57,7 +57,8 @@ Q_1 = [0 0
 A = inv(T) * Q_0;
 B = inv(T) * Q_1;
 
-[V, D] = eig(A);
+[V, D] = eig(A)
+
  
 
 % Observer matrix for W_dot = A_W * W + B_W * e_W
@@ -79,19 +80,19 @@ damping = 0.7;
 resonant_freq = sqrt(g / d);
 damping_poly = [1 (2 * damping * resonant_freq) (resonant_freq * resonant_freq)];
 r_K = roots(damping_poly);
-scale = 2;
 
 D(2, 2)
 
-p_K = [-0.1, D(2, 2), scale * r_K(1), scale * r_K(2)];
+p_K = [-0.1, D(2, 2), r_K(1), r_K(2)];
 
 K = place(A, B, p_K)
 
 
 bessel_poly = [1 6 15 15];
-observer_scale = 200;
+observer_scale = 300;
 
 p_L = observer_scale * [-0.7456 + 0.7114i,-0.7456 - 0.7114i, -0.9412];
 L = place(A_W', C_W', p_L)'
 
 [V_L, D_L] = eig(A_W - L * C_W)
+[V_K, D_K] = eig(A - B * K)
