@@ -95,10 +95,11 @@ observer_scale = 600;
 %p_L = observer_scale * [-0.7456 + 0.7114i,-0.7456 - 0.7114i, -0.9412]
 
 % good one
-p_L = [-35.786800+36.509839i, -35.786800-36.509839i, -61.348800];
+%p_L = [-35.786800+36.509839i, -35.786800-36.509839i, -61.348800];
 
 
-%p_L = 10 * p_K(2:4); % choose corresponding controller poles
+observer_scale = 10; % or 6-10
+p_L_new = observer_scale * p_K(2:4); % choose corresponding controller poles
 
 
 L = place(A_W', C_W', p_L)'
