@@ -89,9 +89,9 @@ K = place(A, B, p_K)
 
 
 bessel_poly = [1 6 15 15];
-observer_scale = 300;
+observer_scale = 600;
 
-p_L = observer_scale * [-0.7456 + 0.7114i,-0.7456 - 0.7114i, -0.9412];
+p_L = observer_scale * [-0.7456 + 0.7114i,-0.7456 - 0.7114i, -0.9412]
 L = place(A_W', C_W', p_L)'
 
 [V_L, D_L] = eig(A_W - L * C_W)
