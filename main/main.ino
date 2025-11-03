@@ -70,16 +70,15 @@ void setup() {
 void loop() {
   if (isSampleFlag()) {
     DEVICE_DATA s = constructDeviceSample(mux, imu, magSensorLeft, magSensorRight, DEVICE_SAMPLE_FMT);
-    printDebug(String(s.leftEncoderData));
     deviceSampleBuffer.push(s);
     resetSampleFlag();
   }
 
   if (isControlFlag()) {
+    float timeNow =  millis() - startTime;
     DEVICE_DATA s = constructDeviceSample(mux, imu, magSensorLeft, magSensorRight, 0xF); // sample everything
     
-
-    float sawtoothValue = sawtoothWave(1, 400, 5, millis() - startTime);
+    float sawtoothValue = sawtoothWave(1, 400, 0,timeNow);
     setMotorDutyCycle(sawtoothValue, sawtoothValue);
 
     resetControlFlag();
