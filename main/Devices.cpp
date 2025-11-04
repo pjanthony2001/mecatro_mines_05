@@ -77,7 +77,6 @@ bool IMU_BMI270::init() {
 
 bool IMU_BMI270::getSensorData() {
   int status = imu.getSensorData();
-  printDebug(String("IMU SENSOR DATA STATUS: ") + (status == BMI2_OK));
   return status == BMI2_OK;
 }
 

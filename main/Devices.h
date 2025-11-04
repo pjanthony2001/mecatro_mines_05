@@ -7,8 +7,6 @@
 #include "SparkFun_BMI270_Arduino_Library.h"
 #include <SparkFun_I2C_Mux_Arduino_Library.h>
 
-constexpr float SENSOR_RAW_TO_RADS = (2 * M_PI) / ((2ul << 12)); // I am assuming that the [0, 2pi) range is stored as 12 bits in the ANGLE register
-
 
 struct DEVICE_DATA {
 

@@ -66,7 +66,7 @@ constexpr int computeDataSize(const uint8_t& fmt) {
 
 /// DEVICE SAMPLE STRUCTURE : [sampleTime][gyroData][accelData][leftEncoder][rightEncoder][0][0][0]
 
-constexpr uint8_t DEVICE_SAMPLE_FMT = 0b10010000;
+constexpr uint8_t DEVICE_SAMPLE_FMT = 0b10011000;
 constexpr int SAMPLE_BYTE_SIZE = computeDataSize(DEVICE_SAMPLE_FMT);
 
 
@@ -95,16 +95,27 @@ constexpr CommMode commMode = CommMode::USB;
 
 // CONTROL PARAMETERS
 
+constexpr float g = 9.81;
+constexpr float d_i = 0.1;
+constexpr float rho = 0.05;
+
 using namespace BLA;
-Matrix<3, 3> A_W = { 1.0, 0.0, 0.0,
-                     0.0, 1.0, 0.0,
-                     0.0, 0.0, 1.0 };
+const Matrix<3, 3> A_W = {0.0, 1.0, 0.0,
+                          0.0, 0.0, g,
+                          0.0, 0.0, 0.0 };
 
-Matrix<3, 2> B_W = { 1.0, 0.0, 
-                     0.0, 0.0,
-                     0.0, 0.0 };
+const Matrix<3, 2> B_W = { -d_i, 0.0, 
+                     0.0, 1.0,
+                     1.0, 0.0 };
 
-Matrix<1, 3> C_W = {1.0, 0.0, 0.0};
+const Matrix<1, 3> C_W = {2 / rho, 0.0, -2.0};
+
+
+// CONSTRUCTION
+
+constexpr int IMU_PORT = 6;
+constexpr int LEFT_ENCODER_PORT = 7;
+constexpr int RIGHT_ENCODER_PORT = 4;
 
 
 

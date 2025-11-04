@@ -8,14 +8,33 @@
 using namespace BLA;
 
 
+struct ControlState {
 
+    ControlState(unsigned long startTime);
+
+    unsigned long controlTime;
+
+    Matrix<3, 1> W;
+    Matrix<2, 4> K;
+    Matrix<3, 1> L;
+
+    float leftMotorDutyCycle;
+    float rightMotorDutyCycle;
+
+    float err;
+
+    void updateControlState(DEVICE_DATA& device_data, unsigned long timeNow);
+};
 
 struct ControlSample {
     unsigned long sampleTime;
 
     float leftMotorDutyCycle;
     float rightMotorDutyCycle;
+
     float err;
 };
+
+#endif
 
 

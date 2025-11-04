@@ -5,6 +5,7 @@
 
 #include "Devices.h"
 #include "Motor.h"
+#include "Control.h"
 
 WiFiUDP_AP wifiAP = WiFiUDP_AP(SSID, PASSWORD);
 MUX_TCA mux = MUX_TCA();
@@ -12,6 +13,7 @@ IMU_BMI270 imu = IMU_BMI270();
 LeftAS5600 magSensorLeft = LeftAS5600();
 RightAS5600 magSensorRight = RightAS5600();
 CircularBuffer<DEVICE_DATA> deviceSampleBuffer = CircularBuffer<DEVICE_DATA>(BUFFER_SIZE);
+ControlState controlState(0);
 
 volatile unsigned long startTime; // IN MILLISECONDS SINCE LOOP STARTED
 
@@ -35,15 +37,15 @@ void configureDevices() {
   bool success = mux.init();
   printDebug(String("MUX Initialisation success: ") + success);
   
-  mux.setPort(0);
+  mux.setPort(IMU_PORT);
   success = imu.init();
   printDebug(String("IMU Initialisation success: ") + success);
 
-  mux.setPort(1);
+  mux.setPort(LEFT_ENCODER_PORT);
   success = magSensorLeft.init();
   printDebug(String("MagSensorLeft Initialisation success: ") + success);
 
-  mux.setPort(2);
+  mux.setPort(RIGHT_ENCODER_PORT);
   success = magSensorRight.init();
   printDebug(String("MagSensorRight Initialisation success: ") + success);
 }
@@ -62,12 +64,13 @@ void setup() {
   wifiAP.begin();
   delay(500);
 
-
   startTime = millis();
+  controlState = ControlState(startTime);
 }
 
 
 void loop() {
+
   if (isSampleFlag()) {
     DEVICE_DATA s = constructDeviceSample(mux, imu, magSensorLeft, magSensorRight, DEVICE_SAMPLE_FMT);
     deviceSampleBuffer.push(s);
@@ -75,11 +78,11 @@ void loop() {
   }
 
   if (isControlFlag()) {
-    float timeNow =  millis() - startTime;
-    DEVICE_DATA s = constructDeviceSample(mux, imu, magSensorLeft, magSensorRight, 0xF); // sample everything
-    
-    float sawtoothValue = sawtoothWave(1, 400, 0,timeNow);
-    setMotorDutyCycle(sawtoothValue, sawtoothValue);
+    DEVICE_DATA s = constructDeviceSample(mux, imu, magSensorLeft, magSensorRight, 0xFF); // sample everything
+    unsigned long timeNow =  millis() - startTime;
+    controlState.updateControlState(s, timeNow);
+
+    setMotorDutyCycle(controlState.leftMotorDutyCycle, controlState.rightMotorDutyCycle);
 
     resetControlFlag();
   }
