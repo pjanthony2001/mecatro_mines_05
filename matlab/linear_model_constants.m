@@ -85,7 +85,12 @@ D(2, 2)
 
 p_K = [-0.1, D(2, 2), r_K(1), r_K(2)];
 
-K = place(A, B, p_K)
+%K = place(A, B, p_K)
+Q = diag([500, 10, 100, 1]);
+RR =  eye(2);
+
+K = lqr(A, B, Q, RR)
+
 
 
 bessel_poly = [1 6 15 15];
@@ -105,5 +110,5 @@ p_L = 50 * [ -1 , ev_bessel , conj(ev_bessel)];
 
 L = place(A_W', C_W', p_L)'
 
-[V_L, D_L] = eig(A_W - L * C_W);
-[V_K, D_K] = eig(A - B * K);
+[V_L, D_L] = eig(A_W - L * C_W)
+[V_K, D_K] = eig(A - B * K)
