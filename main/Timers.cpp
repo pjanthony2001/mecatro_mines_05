@@ -8,7 +8,7 @@
 #include "Motor.h"
 #include "Timers.h"
 
-unsigned int nIterControl, nIterTelemetry, nIterSample;
+volatile unsigned int nIterControl, nIterTelemetry, nIterSample;
 uint8_t eventLinkIndex;
 
 volatile bool controlFlag = false;
@@ -22,7 +22,7 @@ const unsigned int targetIterSample = 20 * SAMPLE_INTERVAL;
 #define SDA1_PIN 25 // pins for the Qwiic connector
 #define SCL1_PIN 26
 
-inline void iterationFlagUpdate(unsigned int& nIter, const unsigned int targetIter, volatile bool& flag) { // inline forces compiler to put logic directly in callback
+inline void iterationFlagUpdate(volatile unsigned int& nIter, const unsigned int targetIter, volatile bool& flag) { // inline forces compiler to put logic directly in callback
     if (++nIter == targetIter) {
         flag = true; // Turn the flag on
         nIter = 0; // reset iteration
@@ -35,7 +35,10 @@ void timerOverflowCallback() {
     R_ICU->IELSR[eventLinkIndex] &= ~(R_ICU_IELSR_IR_Msk);
     R_GPT7->GTST &= ~(R_GPT0_GTST_TCFPO_Msk);
 
-    iterationFlagUpdate(nIterControl, targetIterControl, controlFlag);
+    if (nIterControl++ == targetIterControl) {
+        controlFlag = true; // Turn the flag on
+        nIterControl = 0; // reset iteration
+    }
     iterationFlagUpdate(nIterTelemetry, targetIterTelemetry, telemetryFlag);
     iterationFlagUpdate(nIterSample, targetIterSample, sampleFlag);
 }

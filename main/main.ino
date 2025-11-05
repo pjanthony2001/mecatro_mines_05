@@ -33,14 +33,10 @@ struct USBTelemetry {
   }
 };
 
-void configureDevices() {
+inline void configureDevices() {
   bool success = mux.init();
   printDebug(String("MUX Initialisation success: ") + success);
   
-  mux.setPort(IMU_PORT);
-  success = imu.init();
-  printDebug(String("IMU Initialisation success: ") + success);
-
   mux.setPort(LEFT_ENCODER_PORT);
   success = magSensorLeft.init();
   printDebug(String("MagSensorLeft Initialisation success: ") + success);
@@ -48,6 +44,11 @@ void configureDevices() {
   mux.setPort(RIGHT_ENCODER_PORT);
   success = magSensorRight.init();
   printDebug(String("MagSensorRight Initialisation success: ") + success);
+
+  mux.setPort(IMU_PORT);
+  success = imu.init();
+  printDebug(String("IMU Initialisation success: ") + success);
+
 }
 
 void setup() {
@@ -65,48 +66,48 @@ void setup() {
   delay(500);
 
   startTime = millis();
-  controlState = ControlState(startTime);
+  controlState = ControlState(0);
 }
 
 
 void loop() {
 
-  if (isSampleFlag()) {
-    DEVICE_DATA s = constructDeviceSample(mux, imu, magSensorLeft, magSensorRight, DEVICE_SAMPLE_FMT);
-    deviceSampleBuffer.push(s);
-    resetSampleFlag();
-  }
+  // if (isSampleFlag()) {
+  //   DEVICE_DATA s = constructDeviceSample(mux, imu, magSensorLeft, magSensorRight, DEVICE_SAMPLE_FMT);
+  //   deviceSampleBuffer.push(s);
+  //   resetSampleFlag();
+  // }
 
   if (isControlFlag()) {
+    
     DEVICE_DATA s = constructDeviceSample(mux, imu, magSensorLeft, magSensorRight, 0xFF); // sample everything
-    unsigned long timeNow =  millis() - startTime;
+    unsigned long timeNow = millis() - startTime;
     controlState.updateControlState(s, timeNow);
-
     setMotorDutyCycle(controlState.leftMotorDutyCycle, controlState.rightMotorDutyCycle);
-
     resetControlFlag();
+    startTime =  millis();
   }
 
-  if (isTelemetryFlag()) {
-    switch (commMode) {
-      case CommMode::WIFI: {
-        wifiAP.messageCheck();
-        if (wifiAP.isConnected()) {
-          wifiAP.sendBatch(deviceSampleBuffer);
-        }
-      } break;
+  // if (isTelemetryFlag()) {
+  //   switch (commMode) {
+  //     case CommMode::WIFI: {
+  //       wifiAP.messageCheck();
+  //       if (wifiAP.isConnected()) {
+  //         wifiAP.sendBatch(deviceSampleBuffer);
+  //       }
+  //     } break;
 
-      case CommMode::USB: {
-        if (Serial) { // Serial Connected
-          // Check for Messages?
-          USBTelemetry::sendBatch(deviceSampleBuffer);
-        }
-      } break;
-    }
+  //     case CommMode::USB: {
+  //       if (Serial) { // Serial Connected
+  //         // Check for Messages?
+  //         USBTelemetry::sendBatch(deviceSampleBuffer);
+  //       }
+  //     } break;
+  //   }
 
-    resetTelemetryFlag();
+  //   resetTelemetryFlag();
 
-  }
+  // }
 }
 
 

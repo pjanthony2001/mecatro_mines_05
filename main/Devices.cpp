@@ -72,7 +72,8 @@ bool MUX_TCA::init() {
 
 
 bool IMU_BMI270::init() {
-  return imu.beginI2C(BMI2_I2C_PRIM_ADDR, Wire1) == BMI2_OK;
+  uint8_t resp = imu.beginI2C(BMI2_I2C_PRIM_ADDR, Wire1);
+  return resp == BMI2_OK;
 }
 
 bool IMU_BMI270::getSensorData() {

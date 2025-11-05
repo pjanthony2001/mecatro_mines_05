@@ -14,7 +14,7 @@ struct ControlState {
 
     unsigned long controlTime;
 
-    Matrix<3, 1> W;
+    Matrix<3, 1> W = {0.0, 0.0, 0.0};
     Matrix<2, 4> K;
     Matrix<3, 1> L;
 
