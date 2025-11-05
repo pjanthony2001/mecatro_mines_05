@@ -86,8 +86,8 @@ D(2, 2)
 p_K = [-0.1, D(2, 2), r_K(1), r_K(2)];
 
 %K = place(A, B, p_K)
-Q = diag([500, 10, 100, 1]);
-RR =  eye(2);
+Q = diag([1000, 20, 500, 5]);
+RR = eye(2);
 
 K = lqr(A, B, Q, RR)
 
