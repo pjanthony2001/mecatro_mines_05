@@ -39,19 +39,19 @@ B_1 = 2 * k / R;
 B_2 = 1 / R;
 
 
-T = [1 0 0 0 
-     0 A_0 0 A_1
-     0 0 1 0 
+T = [1 0 0 0 ;
+     0 A_0 0 A_1;
+     0 0 1 0 ;
      0 A_3 0 A_4];
 
-Q_0 = [0 1 0 0
-      0 -A_2*B_0 0 -A_2*B_1
-      0 0 0 1
+Q_0 = [0 1 0 0;
+      0 -A_2*B_0 0 -A_2*B_1;
+      0 0 0 1;
       0 -A_6*B_0 -A_5 -A_6 *B_1];
 
-Q_1 = [0 0
-       -A_2*B_2 -A_2*B_2
-       0 0
+Q_1 = [0 0;
+       -A_2*B_2 -A_2*B_2;
+       0 0;
        -A_6*B_2 -A_6*B_2];
 
 A = inv(T) * Q_0;
@@ -62,12 +62,12 @@ B = inv(T) * Q_1;
  
 
 % Observer matrix for W_dot = A_W * W + B_W * e_W
-A_W = [0 1 0
-       0 0 g
+A_W = [0 1 0;
+       0 0 g;
        0 0 0];
 
-B_W = [-d_i 0
-        0 1
+B_W = [-d_i 0;
+        0 1;
         1 0];
 
 % y_W = C_W * W, y_W = alpha_r + alpha_l
@@ -89,19 +89,21 @@ K = place(A, B, p_K)
 
 
 bessel_poly = [1 6 15 15];
-observer_scale = 600;
+observer_scale = 500;
 %old_one
 
 %p_L = observer_scale * [-0.7456 + 0.7114i,-0.7456 - 0.7114i, -0.9412]
 
 % good one
-p_L = [-35.786800+36.509839i, -35.786800-36.509839i, -61.348800];
+%p_L = 10*[-35.786800+36.509839i, -35.786800-36.509839i, -61.348800];
 
+ev_bessel = -0.7 + 1i * sqrt(1-0.7^2);
+p_L = 50 * [ -1 , ev_bessel , conj(ev_bessel)];
 
 %p_L = 10 * p_K(2:4); % choose corresponding controller poles
 
 
 L = place(A_W', C_W', p_L)'
 
-[V_L, D_L] = eig(A_W - L * C_W)
-[V_K, D_K] = eig(A - B * K)
+[V_L, D_L] = eig(A_W - L * C_W);
+[V_K, D_K] = eig(A - B * K);
