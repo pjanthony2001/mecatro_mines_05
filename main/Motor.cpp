@@ -1,7 +1,8 @@
 #include "Motor.h"
 #include <cmath>
+#include "PWM.h"
 
-void setMotorDutyCycle(float const& leftMotorDC, float const& rightMotorDC) {
+void setMotorDutyCycle(double const& leftMotorDC, double const& rightMotorDC) {
     // Set direction
     digitalWrite(DIRECTION_MOTOR_RIGHT, rightMotorDC > 0);
     digitalWrite(DIRECTION_MOTOR_LEFT, leftMotorDC > 0);

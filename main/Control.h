@@ -14,16 +14,17 @@ struct ControlState {
 
     unsigned long controlTime;
 
-    Matrix<3, 1> W = {0.0, 0.0, 0.0};
-    Matrix<2, 4> K;
-    Matrix<3, 1> L;
+    Matrix<3, 1, double> W = {0.0, 0.0, 0.0};
+    Matrix<3, 1, double> W_dot = {0.0, 0.0, 0.0};
+    Matrix<2, 4, double> K;
+    Matrix<3, 1, double> L;
 
     float leftMotorDutyCycle;
     float rightMotorDutyCycle;
 
-    float err;
+    double err;
 
-    void updateControlState(DEVICE_DATA& device_data, unsigned long timeNow);
+    void updateControlState(MUX_TCA& mux, IMU_BMI270& imu, LeftAS5600& magSensorLeft, RightAS5600& magSensorRight, unsigned long timeNow);
 };
 
 struct ControlSample {

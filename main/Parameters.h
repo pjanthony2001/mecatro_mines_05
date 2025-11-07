@@ -96,26 +96,25 @@ constexpr CommMode commMode = CommMode::USB;
 // CONTROL PARAMETERS
 
 constexpr float g = 9.81;
-constexpr float d_i = 0.17;
+constexpr float d_i = 0.9;
 constexpr float rho = 0.05;
 
 using namespace BLA;
-const Matrix<3, 3> A_W = {0.0, 1.0, 0.0,
+const Matrix<3, 3, double> A_W = {0.0, 1.0, 0.0,
                           0.0, 0.0, g,
                           0.0, 0.0, 0.0 };
 
-const Matrix<3, 2> B_W = { -d_i, 0.0, 
+const Matrix<3, 2, double> B_W = { -d_i, 0.0, 
                      0.0, 1.0,
                      1.0, 0.0 };
 
-const Matrix<1, 3> C_W = {2 / rho, 0.0, -2.0};
-
+const Matrix<1, 3, double> C_W = {2.0 / rho, 0.0, -2.0};
 
 // CONSTRUCTION
 
 constexpr int IMU_PORT = 0;
-constexpr int LEFT_ENCODER_PORT = 7;
-constexpr int RIGHT_ENCODER_PORT = 4;
+constexpr int LEFT_ENCODER_PORT = 1;
+constexpr int RIGHT_ENCODER_PORT = 2;
 
 
 

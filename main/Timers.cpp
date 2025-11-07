@@ -15,15 +15,15 @@ volatile bool controlFlag = false;
 volatile bool telemetryFlag = false;
 volatile bool sampleFlag = false;
 
-const unsigned int targetIterControl = 20 * CONTROL_INTERVAL; // Timer is running at 20kHz
-const unsigned int targetIterTelemetry = 20 * MESSAGE_INTERVAL; 
-const unsigned int targetIterSample = 20 * SAMPLE_INTERVAL;
+const unsigned int targetIterControl = 20 * CONTROL_INTERVAL - 10; // Timer is running at 20kHz
+const unsigned int targetIterTelemetry = 20 * MESSAGE_INTERVAL - 10; 
+const unsigned int targetIterSample = 20 * SAMPLE_INTERVAL - 10;
 
 #define SDA1_PIN 25 // pins for the Qwiic connector
 #define SCL1_PIN 26
 
 inline void iterationFlagUpdate(volatile unsigned int& nIter, const unsigned int targetIter, volatile bool& flag) { // inline forces compiler to put logic directly in callback
-    if (++nIter == targetIter) {
+    if (nIter++ == targetIter) {
         flag = true; // Turn the flag on
         nIter = 0; // reset iteration
     }

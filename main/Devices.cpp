@@ -26,8 +26,34 @@ bool AS5600::init() {
         printDebug("AS5600 Magnet too weak");
     }
 
+    lastAngle = as5600.getAngle();
+
     return true;
 };
+
+void AS5600::updateCumPosition() {
+  uint16_t currAngle = as5600.getAngle();
+  if ((lastAngle > 2048) && (currAngle < (lastAngle - 2048))) {
+    currCumPosition += 4096 - lastAngle + currAngle;
+  } else if ((currAngle > 2048) && (lastAngle < (currAngle - 2048))) {
+    currCumPosition -= 4096 - currAngle + lastAngle;
+  } else {
+    currCumPosition += lastAngle;
+    currCumPosition -= currAngle;
+  }
+
+  lastAngle = currAngle;
+}
+
+long AS5600::getCumAngle() {
+  updateCumPosition();
+  return currCumPosition;
+}
+
+uint16_t AS5600::getAngle() {
+  updateCumPosition();
+  return lastAngle;
+}
 
 bool LeftAS5600::read(DEVICE_DATA& dataStruct) {
     if (as5600.isAGCminGainOverflow()) {
@@ -116,6 +142,14 @@ bool IMU_BMI270::readData(DEVICE_DATA& dataStruct) {
 
   dataStruct.fmt |= 0b01100000; 
   return true;
+}
+
+BMI270_SensorData IMU_BMI270::getData() {
+  if (!getSensorData()) {
+    BMI270_SensorData data;
+    return data;
+  }
+  return imu.data;
 }
 
 

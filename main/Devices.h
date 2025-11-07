@@ -34,9 +34,16 @@ class AS5600 {
     // A wrapper for the AS5600 Adafruit class
     public:
         bool init();
+        uint16_t getAngle();
+        long getCumAngle();
 
     protected:
         Adafruit_AS5600 as5600;
+        uint16_t lastAngle;
+        long currCumPosition;
+        void updateCumPosition();
+
+
 };
 
 
@@ -69,9 +76,17 @@ class IMU_BMI270 {
         bool readAcc(DEVICE_DATA& dataStruct);
         bool readData(DEVICE_DATA& dataStruct);
 
-    private:
         BMI270 imu;
+        float getGyroX();
+        float getGyroY();
+        float getGyroZ();
+
+        float getAccelX();
+        float getAccelY();
+        float getAccelZ();
+
         bool getSensorData();
+        BMI270_SensorData getData();
 };
 
 
