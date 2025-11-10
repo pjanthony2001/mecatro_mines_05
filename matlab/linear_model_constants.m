@@ -1,5 +1,5 @@
-m_w = 0.41 ; %Masse d'une unite (roue + engrenage + rotor)
-m_b = 1.8 ; %Masse du chassis du robot
+m_w = 0.040 ; %Masse d'une unite (roue + engrenage + rotor)
+m_b = 0.700 ; %Masse du chassis du robot
 
 I_x = 9.942 * 1e-3;
 I_y = 5.31 * 1e-3;
@@ -57,9 +57,18 @@ Q_1 = [0 0;
 A = inv(T) * Q_0;
 B = inv(T) * Q_1;
 
-[V, D] = eig(A)
+[V, D] = eig(A);
 
- 
+alpha_ = (A_6 * A_0 - A_2 * A_3) / (A_2 * A_5)
+beta_ = (A_6 * A_1 - A_2 * A_4) / (A_2 * A_5)
+
+N = [alpha_ 0 beta_ 0
+     0 alpha_ 0 beta_
+     0 0 1 0
+     0 0 0 1];
+
+A = N * A * inv(N);
+B = N * B;
 
 % Observer matrix for W_dot = A_W * W + B_W * e_W
 A_W = [0 1 0;
@@ -86,7 +95,7 @@ D(2, 2)
 p_K = [-0.1, D(2, 2), r_K(1), r_K(2)];
 
 %K = place(A, B, p_K)
-Q = diag([500, 20, 1000, 5]);
+Q = diag([5, 5, 50, 1]);
 RR = eye(2);
 
 K = lqr(A, B, Q, RR)
