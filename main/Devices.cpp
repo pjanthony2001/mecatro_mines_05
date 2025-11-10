@@ -4,6 +4,9 @@
 #include <SparkFun_I2C_Mux_Arduino_Library.h> 
 
 
+
+
+
 bool AS5600::init() {
     if (!as5600.begin(AS5600_DEFAULT_ADDR, &Wire1)) {
         printDebug("Could not find AS5600 sensor, check wiring!");
@@ -18,13 +21,35 @@ bool AS5600::init() {
     as5600.setMaxAngle(4095);
 
     printDebug(String("AS5600 Magnet detected: ") + as5600.isMagnetDetected());
-
+    as5600.setHysteresis(AS5600_HYSTERESIS_1LSB);
 
     if (as5600.isAGCminGainOverflow()) {
         printDebug("AS5600 Magnet too strong");
     } else if (as5600.isAGCmaxGainOverflow()) {
         printDebug("AS5600 Magnet too weak");
     }
+
+
+    uint8_t agc = as5600.getAGC();
+    uint16_t magnitude = as5600.getMagnitude();
+
+
+
+    Serial.println("---- AS5600 Diagnostics ----");
+    Serial.print("Magnet detected: ");
+    Serial.println(as5600.isMagnetDetected() ? "YES" : "NO");
+
+    Serial.print("AGC (Automatic Gain Control): ");
+    Serial.println(agc);
+
+    Serial.print("Magnitude (signal strength): ");
+    Serial.println(magnitude);
+
+    if (as5600.isAGCminGainOverflow()) Serial.println("⚠️ Magnet too strong");
+    if (as5600.isAGCmaxGainOverflow()) Serial.println("⚠️ Magnet too weak");
+
+    Serial.println("-----------------------------\n");
+
 
     lastAngle = as5600.getAngle();
 
@@ -99,7 +124,30 @@ bool MUX_TCA::init() {
 
 bool IMU_BMI270::init() {
   uint8_t resp = imu.beginI2C(BMI2_I2C_PRIM_ADDR, Wire1);
-  return resp == BMI2_OK;
+  Serial.println("Running component retrim (gyro)...");
+  imu.performComponentRetrim(); // reduces gyro scale error
+    int8_t err = BMI2_OK;
+
+    // Set accelerometer config
+    bmi2_sens_config accelConfig;
+    accelConfig.type = BMI2_ACCEL;
+    accelConfig.cfg.acc.odr = BMI2_ACC_ODR_100HZ;
+    accelConfig.cfg.acc.bwp = BMI2_ACC_OSR4_AVG1;
+    accelConfig.cfg.acc.filter_perf = BMI2_PERF_OPT_MODE;
+    accelConfig.cfg.acc.range = BMI2_ACC_RANGE_2G;
+    err = imu.setConfig(accelConfig);
+
+    // Set gyroscope config
+    bmi2_sens_config gyroConfig;
+    gyroConfig.type = BMI2_GYRO;
+    gyroConfig.cfg.gyr.odr = BMI2_ACC_ODR_100HZ;
+    gyroConfig.cfg.gyr.bwp = BMI2_GYR_OSR4_MODE;
+    gyroConfig.cfg.gyr.filter_perf = BMI2_PERF_OPT_MODE;
+    gyroConfig.cfg.gyr.ois_range = BMI2_GYR_OIS_250;
+    gyroConfig.cfg.gyr.range = BMI2_GYR_RANGE_125;
+    gyroConfig.cfg.gyr.noise_perf = BMI2_PERF_OPT_MODE;
+    err = imu.setConfig(gyroConfig);
+  return err == BMI2_OK;
 }
 
 bool IMU_BMI270::getSensorData() {

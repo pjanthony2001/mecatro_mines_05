@@ -27,9 +27,22 @@ Matrix<2, 4, double> K = {-15.8114, -24.4502, -30.6841, -2.7239,
 
 Matrix<3, 1, double> L = {18.9276, 150, 318.5525};
 
+double alpha_ = 0.2644;
+double beta_ = 0.0288;
+
+Matrix<4, 4, double> N = {alpha_, 0.0, beta_, 0.0,
+                          0.0, alpha_, 0.0, beta_,
+                          0.0, 0.0, 1.0, 0.0,
+                          0.0, 0.0, 0.0, 1.0};
+
+
+const double cutoff = 20;  // Hz (tune this!)
+
+
 volatile unsigned long startTime; // IN MILLISECONDS SINCE LOOP STARTED
 long alpha_l, alpha_r;
-
+Matrix<2, 1, double> e_W_prev;
+Matrix<2, 1, double> e_W_filtered;
 
 
 struct USBTelemetry {
@@ -107,15 +120,20 @@ void loop() {
     controlTime = timeNow;
 
 
+
     mux.setPort(LEFT_ENCODER_PORT);
     alpha_l = magSensorLeft.getCumAngle();
     mux.setPort(RIGHT_ENCODER_PORT);
-    alpha_r = magSensorRight.getCumAngle();
+    alpha_r = 0;
     mux.setPort(IMU_PORT);
     BMI270_SensorData data = imu.getData();
 
 
     Matrix<2, 1, double> e_W = {-GYRO_DEG_TO_RAD * data.gyroY, -ACC_G_TO_MS_2 * data.accelX}; // check these
+
+    // double alpha = exp(-2.0 * PI * cutoff * timeDelta * num_int);
+    // e_W_filtered = alpha * e_W_prev + (1.0 - alpha) * e_W;
+    // e_W_prev = e_W_filtered;
 
     double y_alpha = SENSOR_RAW_TO_RADS * (alpha_l + alpha_r);
 
@@ -126,11 +144,15 @@ void loop() {
       W_dot = W_dot_new;
     }
 
-    Matrix<4, 1, double> X_hat = {rho * W(2, 0) , 0, W(2, 0), 0};
-    Matrix<2, 1, double> e = - K * X_hat;
+    Matrix<4, 1, double> X_hat = {W(0, 0), W(1, 0) - d_i * e_W(0, 0), W(2, 0), e_W(0, 0)};
+    Matrix<2, 1, double> e = - K * N * X_hat;
 
     double leftMotorDutyCycle = max(min((e(0, 0) / 12.0), 0.25), -0.25);
     double rightMotorDutyCycle = max(min((e(1, 0) / 12.0), 0.25), -0.25);
+
+
+    Serial.print("e(0, 0):");
+    Serial.println(e(0, 0) * 1000);
 
     setMotorDutyCycle(rightMotorDutyCycle, -leftMotorDutyCycle);
     resetControlFlag();
