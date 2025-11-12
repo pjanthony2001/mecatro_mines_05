@@ -22,13 +22,14 @@ constexpr float ACC_G_TO_MS_2 = 9.81;
 
 Matrix<3, 1, double> W;
 Matrix<3, 1, double> W_dot;
-Matrix<2, 4, double> K = {-15.8114, -24.4502, -30.6841, -2.7239,
-                           -15.8114, -24.4502, -30.6841, -2.7239};
+Matrix<2, 4, double> K = {-8, -50.0, -7, -0.05, 
+                          -8, -50.0, -7, -0.05};
 
-Matrix<3, 1, double> L = {18.9276, 150, 318.5525};
 
-double alpha_ = 0.2644;
-double beta_ = 0.0288;
+Matrix<3, 1, double> L = {18.9687, 154.1383, 318.5525};
+
+double alpha_ = 0.2089;
+double beta_ = 0.0244;
 
 Matrix<4, 4, double> N = {alpha_, 0.0, beta_, 0.0,
                           0.0, alpha_, 0.0, beta_,
@@ -36,13 +37,8 @@ Matrix<4, 4, double> N = {alpha_, 0.0, beta_, 0.0,
                           0.0, 0.0, 0.0, 1.0};
 
 
-const double cutoff = 20;  // Hz (tune this!)
-
 
 volatile unsigned long startTime; // IN MILLISECONDS SINCE LOOP STARTED
-long alpha_l, alpha_r;
-Matrix<2, 1, double> e_W_prev;
-Matrix<2, 1, double> e_W_filtered;
 
 
 struct USBTelemetry {
@@ -115,46 +111,45 @@ void loop() {
   if (isControlFlag()) {
     
     unsigned long timeNow = millis() - startTime;
-    int num_int = 10;
+    int num_int = 15;
     double timeDelta = ((double) (timeNow - controlTime)) / (1000 * num_int);
     controlTime = timeNow;
 
 
-
     mux.setPort(LEFT_ENCODER_PORT);
-    alpha_l = magSensorLeft.getCumAngle();
+    long alpha_l = magSensorLeft.getCumAngle();
     mux.setPort(RIGHT_ENCODER_PORT);
-    alpha_r = 0;
+    long alpha_r = magSensorRight.getCumAngle();
     mux.setPort(IMU_PORT);
     BMI270_SensorData data = imu.getData();
 
 
-    Matrix<2, 1, double> e_W = {-GYRO_DEG_TO_RAD * data.gyroY, -ACC_G_TO_MS_2 * data.accelX}; // check these
-
-    // double alpha = exp(-2.0 * PI * cutoff * timeDelta * num_int);
-    // e_W_filtered = alpha * e_W_prev + (1.0 - alpha) * e_W;
-    // e_W_prev = e_W_filtered;
+    Matrix<2, 1, double> e_W = {GYRO_DEG_TO_RAD * data.gyroY, -ACC_G_TO_MS_2 * data.accelX}; // check these
 
     double y_alpha = SENSOR_RAW_TO_RADS * (alpha_l + alpha_r);
 
+    double err;
     for (int i = 0; i < num_int; i++) {
-      double err = y_alpha - (C_W * W)(0, 0);
-      Matrix<3, 1, double> W_dot_new = A_W * W + B_W * e_W + L * err;
-      W += 0.5 * timeDelta * (W_dot_new + W_dot);
-      W_dot = W_dot_new;
+      err = y_alpha - (C_W * W)(0, 0);
+      Matrix<3,1,double> W_dot1 = (A_W * W) + (B_W * e_W) + (L * err);
+      Matrix<3,1,double> W_temp = W + timeDelta * W_dot1;
+      err = y_alpha - (C_W * W_temp)(0, 0);
+      Matrix<3,1,double> W_dot2 = (A_W * W_temp) + (B_W * e_W) + (L * err);
+      W += 0.5 * timeDelta * (W_dot1 + W_dot2);
     }
 
     Matrix<4, 1, double> X_hat = {W(0, 0), W(1, 0) - d_i * e_W(0, 0), W(2, 0), e_W(0, 0)};
-    Matrix<2, 1, double> e = - K * N * X_hat;
+    X_hat = N * X_hat;
+    Matrix<2, 1, double> e = - K * X_hat;
 
-    double leftMotorDutyCycle = max(min((e(0, 0) / 12.0), 0.25), -0.25);
-    double rightMotorDutyCycle = max(min((e(1, 0) / 12.0), 0.25), -0.25);
+    double leftMotorDutyCycle = e(0, 0) / 12.0;
+    double rightMotorDutyCycle = e(1, 0) / 12.0;
 
+    setMotorDutyCycle(-leftMotorDutyCycle, -rightMotorDutyCycle);
+    // Serial.print(alpha_l * SENSOR_RAW_TO_RADS);
+    // Serial.print("\t");
+    // Serial.print(alpha_r * SENSOR_RAW_TO_RADS);
 
-    Serial.print("e(0, 0):");
-    Serial.println(e(0, 0) * 1000);
-
-    setMotorDutyCycle(rightMotorDutyCycle, -leftMotorDutyCycle);
     resetControlFlag();
   }
 

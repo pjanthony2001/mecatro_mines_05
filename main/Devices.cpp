@@ -124,30 +124,30 @@ bool MUX_TCA::init() {
 
 bool IMU_BMI270::init() {
   uint8_t resp = imu.beginI2C(BMI2_I2C_PRIM_ADDR, Wire1);
-  Serial.println("Running component retrim (gyro)...");
-  imu.performComponentRetrim(); // reduces gyro scale error
-    int8_t err = BMI2_OK;
+  // Serial.println("Running component retrim (gyro)...");
+  // imu.performComponentRetrim(); // reduces gyro scale error
+  int8_t err = BMI2_OK;
 
-    // Set accelerometer config
-    bmi2_sens_config accelConfig;
-    accelConfig.type = BMI2_ACCEL;
-    accelConfig.cfg.acc.odr = BMI2_ACC_ODR_100HZ;
-    accelConfig.cfg.acc.bwp = BMI2_ACC_OSR4_AVG1;
-    accelConfig.cfg.acc.filter_perf = BMI2_PERF_OPT_MODE;
-    accelConfig.cfg.acc.range = BMI2_ACC_RANGE_2G;
-    err = imu.setConfig(accelConfig);
+  //   // Set accelerometer config
+    // bmi2_sens_config accelConfig;
+    // accelConfig.type = BMI2_ACCEL;
+    // accelConfig.cfg.acc.odr = BMI2_ACC_ODR_100HZ;
+    // accelConfig.cfg.acc.bwp = BMI2_ACC_OSR4_AVG1;
+    // accelConfig.cfg.acc.filter_perf = BMI2_PERF_OPT_MODE;
+    // accelConfig.cfg.acc.range = BMI2_ACC_RANGE_2G;
+    // err = imu.setConfig(accelConfig);
 
-    // Set gyroscope config
-    bmi2_sens_config gyroConfig;
-    gyroConfig.type = BMI2_GYRO;
-    gyroConfig.cfg.gyr.odr = BMI2_ACC_ODR_100HZ;
-    gyroConfig.cfg.gyr.bwp = BMI2_GYR_OSR4_MODE;
-    gyroConfig.cfg.gyr.filter_perf = BMI2_PERF_OPT_MODE;
-    gyroConfig.cfg.gyr.ois_range = BMI2_GYR_OIS_250;
-    gyroConfig.cfg.gyr.range = BMI2_GYR_RANGE_125;
-    gyroConfig.cfg.gyr.noise_perf = BMI2_PERF_OPT_MODE;
-    err = imu.setConfig(gyroConfig);
-  return err == BMI2_OK;
+  //   // Set gyroscope config
+    // bmi2_sens_config gyroConfig;
+    // gyroConfig.type = BMI2_GYRO;
+    // gyroConfig.cfg.gyr.odr = BMI2_ACC_ODR_100HZ;
+    // gyroConfig.cfg.gyr.bwp = BMI2_GYR_OSR4_MODE;
+    // gyroConfig.cfg.gyr.filter_perf = BMI2_PERF_OPT_MODE;
+    // gyroConfig.cfg.gyr.ois_range = BMI2_GYR_OIS_250;
+    // gyroConfig.cfg.gyr.range = BMI2_GYR_RANGE_125;
+    // gyroConfig.cfg.gyr.noise_perf = BMI2_PERF_OPT_MODE;
+    // err = imu.setConfig(gyroConfig);
+  return resp == BMI2_OK;
 }
 
 bool IMU_BMI270::getSensorData() {

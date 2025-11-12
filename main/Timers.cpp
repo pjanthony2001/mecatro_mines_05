@@ -15,9 +15,9 @@ volatile bool controlFlag = false;
 volatile bool telemetryFlag = false;
 volatile bool sampleFlag = false;
 
-const unsigned int targetIterControl = 20 * CONTROL_INTERVAL - 10; // Timer is running at 20kHz
-const unsigned int targetIterTelemetry = 20 * MESSAGE_INTERVAL - 10; 
-const unsigned int targetIterSample = 20 * SAMPLE_INTERVAL - 10;
+const unsigned int targetIterControl = 20 * CONTROL_INTERVAL - 1; // Timer is running at 20kHz
+const unsigned int targetIterTelemetry = 20 * MESSAGE_INTERVAL - 1; 
+const unsigned int targetIterSample = 20 * SAMPLE_INTERVAL - 1;
 
 #define SDA1_PIN 25 // pins for the Qwiic connector
 #define SCL1_PIN 26

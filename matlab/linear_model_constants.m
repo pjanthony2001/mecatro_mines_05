@@ -1,18 +1,18 @@
-m_w = 0.040 ; %Masse d'une unite (roue + engrenage + rotor)
-m_b = 0.700 ; %Masse du chassis du robot
+m_w = 0.030 ; %Masse d'une unite (roue + engrenage + rotor)
+m_b = 1.206 ; %Masse du chassis du robot
 
-I_x = 9.942 * 1e-3;
-I_y = 5.31 * 1e-3;
-I_z = 5.953 * 1e-3; %Moment d'inertie du chassis autour de chacun de ses axes, a C
+I_x = 1.509 * 1e-2;
+I_y = 8.659 * 1e-3;
+I_z = 7.966 * 1e-3; %Moment d'inertie du chassis autour de chacun de ses axes, a C
 
 Iw_x = 4.8886 * 1e-4;
 Iw_y = 2.5233 * 1e-4;
 Iw_z = 2.5307 * 1e-4; %Moment d'inertie de la roue autour de chacun de ses axes, a Cw
 
 l = 0.171 ; %Distance entre les deux roues
-d = 0.044 ; %Distance entre A et C
+d = 0.058 ; %Distance entre A et C
 rho = 0.050 ; %position verticale(rayon du roue)
-d_i = 0.100 ; %Distance verticale entre l'IMU et l'axe des roues
+d_i = 0.0915 ; %Distance verticale entre l'IMU et l'axe des roues
 
 L = 0 ; %Inductance des moteurs 
 R = 2.181818 ; %Resistance des moteurs
@@ -57,7 +57,7 @@ Q_1 = [0 0;
 A = inv(T) * Q_0;
 B = inv(T) * Q_1;
 
-[V, D] = eig(A);
+[V, D] = eig(A)
 
 alpha_ = (A_6 * A_0 - A_2 * A_3) / (A_2 * A_5)
 beta_ = (A_6 * A_1 - A_2 * A_4) / (A_2 * A_5)
@@ -94,11 +94,11 @@ D(2, 2)
 
 p_K = [-0.1, D(2, 2), r_K(1), r_K(2)];
 
-%K = place(A, B, p_K)
-Q = diag([5, 5, 50, 1]);
-RR = eye(2);
+K = place(A, B, p_K)
+%Q = diag([5, 5, 50, 1]);
+%RR = eye(2);
 
-K = lqr(A, B, Q, RR)
+%K = lqr(A, B, Q, RR)
 
 
 
@@ -112,7 +112,8 @@ observer_scale = 500;
 %p_L = 10*[-35.786800+36.509839i, -35.786800-36.509839i, -61.348800];
 
 ev_bessel = -0.7 + 1i * sqrt(1-0.7^2);
-p_L = 50 * [ -1 , ev_bessel , conj(ev_bessel)];
+[z_,p,k_] = besself(3,1);
+p_L = 50 * p;
 
 %p_L = 10 * p_K(2:4); % choose corresponding controller poles
 
@@ -120,4 +121,5 @@ p_L = 50 * [ -1 , ev_bessel , conj(ev_bessel)];
 L = place(A_W', C_W', p_L)'
 
 [V_L, D_L] = eig(A_W - L * C_W)
+
 [V_K, D_K] = eig(A - B * K)

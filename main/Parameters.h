@@ -80,7 +80,7 @@ constexpr int LOCAL_UDP_PORT = 1234;
 constexpr int CLIENT_UDP_PORT = 1234;
 
 constexpr unsigned int MESSAGE_INTERVAL = 2000; // in milliseconds, the interval to check messages, should be more than is sent by the client
-constexpr unsigned int CONTROL_INTERVAL = 5; // in milliseconds, the interval to update control commands if necessary, and maybe sensor data is logged??
+constexpr unsigned int CONTROL_INTERVAL = 10; // in milliseconds, the interval to update control commands if necessary, and maybe sensor data is logged??
 constexpr float SAMPLE_INTERVAL = 5; // in milliseconds, the interval to check my sampling devices (The highest ODR is 800Hz, but 400Hz is okay.)
 
 constexpr unsigned long HEARTBEAT_TIMEOUT = 10000; // in milliseconds, the interval consider a connection is closed
@@ -96,7 +96,7 @@ constexpr CommMode commMode = CommMode::USB;
 // CONTROL PARAMETERS
 
 constexpr float g = 9.81;
-constexpr float d_i = 0.9;
+constexpr float d_i = 0.0915;
 constexpr float rho = 0.05;
 
 using namespace BLA;
