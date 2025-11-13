@@ -36,6 +36,9 @@ struct ControlSample {
     float err;
 };
 
+
+float squareWave(unsigned long x, float freq);
+
 #endif
 
 

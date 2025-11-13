@@ -45,8 +45,8 @@ struct USBTelemetry {
   static void sendBatch(CircularBuffer<DEVICE_DATA>& buffer) {
     DEVICE_DATA batch[SAMPLE_BATCH_SIZE];
     uint8_t batchBuffer[SAMPLE_BATCH_SIZE * SAMPLE_BYTE_SIZE];
-    if (deviceSampleBuffer.available() >= SAMPLE_BATCH_SIZE) {
-        deviceSampleBuffer.popBatch(batch, SAMPLE_BATCH_SIZE);
+    if (buffer.available() >= SAMPLE_BATCH_SIZE) {
+        buffer.popBatch(batch, SAMPLE_BATCH_SIZE);
         for (int i = 0; i < SAMPLE_BATCH_SIZE; i++) {
             batch[i].writeBytes(batchBuffer + i * SAMPLE_BYTE_SIZE);
         }
@@ -80,6 +80,9 @@ void setup() {
   delay(1000);
   while(!Serial);;
 
+  Serial.println("Starting setup...");
+  Serial.flush();
+  
   configureArduino();
   delay(300);
 
@@ -118,32 +121,41 @@ void loop() {
 
     mux.setPort(LEFT_ENCODER_PORT);
     long alpha_l = magSensorLeft.getCumAngle();
-    mux.setPort(RIGHT_ENCODER_PORT);
-    long alpha_r = magSensorRight.getCumAngle();
-    mux.setPort(IMU_PORT);
-    BMI270_SensorData data = imu.getData();
+    // mux.setPort(RIGHT_ENCODER_PORT);
+    // long alpha_r = magSensorRight.getCumAngle();
+    // mux.setPort(IMU_PORT);
+    // BMI270_SensorData data = imu.getData();
 
 
-    Matrix<2, 1, double> e_W = {GYRO_DEG_TO_RAD * data.gyroY, -ACC_G_TO_MS_2 * data.accelX}; // check these
+    // Matrix<2, 1, double> e_W = {GYRO_DEG_TO_RAD * data.gyroY, -ACC_G_TO_MS_2 * data.accelX}; // check these
 
-    double y_alpha = SENSOR_RAW_TO_RADS * (alpha_l + alpha_r);
+    // double y_alpha = SENSOR_RAW_TO_RADS * (alpha_l + alpha_r);
 
-    double err;
-    for (int i = 0; i < num_int; i++) {
-      err = y_alpha - (C_W * W)(0, 0);
-      Matrix<3,1,double> W_dot1 = (A_W * W) + (B_W * e_W) + (L * err);
-      Matrix<3,1,double> W_temp = W + timeDelta * W_dot1;
-      err = y_alpha - (C_W * W_temp)(0, 0);
-      Matrix<3,1,double> W_dot2 = (A_W * W_temp) + (B_W * e_W) + (L * err);
-      W += 0.5 * timeDelta * (W_dot1 + W_dot2);
-    }
+    // double err;
+    // for (int i = 0; i < num_int; i++) {
+    //   err = y_alpha - (C_W * W)(0, 0);
+    //   Matrix<3,1,double> W_dot1 = (A_W * W) + (B_W * e_W) + (L * err);
+    //   Matrix<3,1,double> W_temp = W + timeDelta * W_dot1;
+    //   err = y_alpha - (C_W * W_temp)(0, 0);
+    //   Matrix<3,1,double> W_dot2 = (A_W * W_temp) + (B_W * e_W) + (L * err);
+    //   W += 0.5 * timeDelta * (W_dot1 + W_dot2);
+    // }
 
-    Matrix<4, 1, double> X_hat = {W(0, 0), W(1, 0) - d_i * e_W(0, 0), W(2, 0), e_W(0, 0)};
-    X_hat = N * X_hat;
-    Matrix<2, 1, double> e = - K * X_hat;
+    // Matrix<4, 1, double> X_hat = {W(0, 0), W(1, 0) - d_i * e_W(0, 0), W(2, 0), e_W(0, 0)};
+    // X_hat = N * X_hat;
+    // Matrix<2, 1, double> e = - K * X_hat;
 
-    double leftMotorDutyCycle = e(0, 0) / 12.0;
-    double rightMotorDutyCycle = e(1, 0) / 12.0;
+    float freq = 1;
+    double leftMotorDutyCycle = squareWave(timeNow, freq);
+    double rightMotorDutyCycle = 0.0;
+
+    DEVICE_DATA s;
+    s.leftEncoderData = alpha_l;
+    s.sampleTime = timeNow;
+    s.float_1 = leftMotorDutyCycle;
+    s.fmt = DEVICE_SAMPLE_FMT;
+    deviceSampleBuffer.push(s);
+
 
     setMotorDutyCycle(-leftMotorDutyCycle, -rightMotorDutyCycle);
     // Serial.print(alpha_l * SENSOR_RAW_TO_RADS);
@@ -153,26 +165,26 @@ void loop() {
     resetControlFlag();
   }
 
-  // if (isTelemetryFlag()) {
-  //   switch (commMode) {
-  //     case CommMode::WIFI: {
-  //       wifiAP.messageCheck();
-  //       if (wifiAP.isConnected()) {
-  //         wifiAP.sendBatch(deviceSampleBuffer);
-  //       }
-  //     } break;
+  if (isTelemetryFlag()) {
+    switch (commMode) {
+      case CommMode::WIFI: {
+        wifiAP.messageCheck();
+        if (wifiAP.isConnected()) {
+          wifiAP.sendBatch(deviceSampleBuffer);
+        }
+      } break;
 
-  //     case CommMode::USB: {
-  //       if (Serial) { // Serial Connected
-  //         // Check for Messages?
-  //         USBTelemetry::sendBatch(deviceSampleBuffer);
-  //       }
-  //     } break;
-  //   }
+      case CommMode::USB: {
+        if (Serial) { // Serial Connected
+          // Check for Messages?
+          USBTelemetry::sendBatch(deviceSampleBuffer);
+        }
+      } break;
+    }
 
-  //   resetTelemetryFlag();
+    resetTelemetryFlag();
 
-  // }
+  }
 }
 
 

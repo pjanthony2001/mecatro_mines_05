@@ -84,17 +84,18 @@ B_W = [-d_i 0;
 C_W = [2/rho 0 -2];
 
 
-
+[V, D] = eig(A)
 damping = 0.7;
 resonant_freq = sqrt(g / d);
 damping_poly = [1 (2 * damping * resonant_freq) (resonant_freq * resonant_freq)];
 r_K = roots(damping_poly);
 
-D(2, 2)
-
 p_K = [-0.1, D(2, 2), r_K(1), r_K(2)];
 
 K = place(A, B, p_K)
+
+
+
 %Q = diag([5, 5, 50, 1]);
 %RR = eye(2);
 
@@ -111,14 +112,14 @@ observer_scale = 500;
 % good one
 %p_L = 10*[-35.786800+36.509839i, -35.786800-36.509839i, -61.348800];
 
-ev_bessel = -0.7 + 1i * sqrt(1-0.7^2);
 [z_,p,k_] = besself(3,1);
 p_L = 50 * p;
+L = place(A_W', C_W', p_L)';
 
 %p_L = 10 * p_K(2:4); % choose corresponding controller poles
 
 
-L = place(A_W', C_W', p_L)'
+
 
 [V_L, D_L] = eig(A_W - L * C_W)
 

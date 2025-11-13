@@ -20,3 +20,9 @@ ControlState::ControlState(unsigned long startTime)  : controlTime(startTime) {
 void ControlState::updateControlState(MUX_TCA& mux, IMU_BMI270& imu, LeftAS5600& magSensorLeft, RightAS5600& magSensorRight, unsigned long timeNow) {
     
 }
+
+
+float squareWave(unsigned long x, float freq) {
+    float timeSeconds = ((float) x ) / 1000;
+    return 2 * (2 * floor(timeSeconds * freq) - floor(2 * timeSeconds * freq)) + 1;
+};

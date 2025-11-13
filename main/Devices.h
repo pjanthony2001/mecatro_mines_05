@@ -10,19 +10,21 @@
 
 struct DEVICE_DATA {
 
-    /// SAMPLE STRUCTURE : [sampleTime][gyroData][accelData][leftEncoder][rightEncoder][0][0][0]
+    /// SAMPLE STRUCTURE : [sampleTime][gyroData][accelData][leftEncoder][rightEncoder][float_1][0][0]
 
     unsigned long sampleTime;
 
     float gyroData[3];
     float accelData[3];
 
-    uint16_t leftEncoderData;
-    uint16_t rightEncoderData;
+    long leftEncoderData;
+    long rightEncoderData;
 
     uint8_t fmt = 0; // FORMAT TO DECODE
     
     bool isValid = true;
+
+    float float_1;
 
     void writeBytes(uint8_t* dataBuffer);
     void setSampleTime(unsigned long sampleTime);

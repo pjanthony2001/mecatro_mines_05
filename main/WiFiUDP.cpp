@@ -8,7 +8,7 @@
 
 WiFiUDP_AP::WiFiUDP_AP(
     const char* SSID, 
-    const char* password) : SSID(SSID), password(password), apStatus(WL_IDLE_STATUS), sendInterval(0), sequence(0), tcpServer(5000) {
+    const char* password) : SSID(SSID), password(password), apStatus(WL_IDLE_STATUS), sendInterval(0), sequence(0), tcpServer(5002) {
     }
 
 void WiFiUDP_AP::begin() {
@@ -45,13 +45,18 @@ void WiFiUDP_AP::begin() {
 void WiFiUDP_AP::sendBatch(CircularBuffer<DEVICE_DATA>& buffer) {
   // The client should be connected before sending a batch
   DEVICE_DATA batch[SAMPLE_BATCH_SIZE];
-  if (buffer.available() >= SAMPLE_BATCH_SIZE) {
-      buffer.popBatch(batch, SAMPLE_BATCH_SIZE);
-      udpServer.beginPacket(clientIP, CLIENT_UDP_PORT);
-      udpServer.write((uint8_t*)batch, sizeof(batch));
-      udpServer.endPacket();
-  }    
+  uint8_t batchBuffer[SAMPLE_BATCH_SIZE * SAMPLE_BYTE_SIZE];
 
+  if (buffer.available() >= SAMPLE_BATCH_SIZE) {
+    buffer.popBatch(batch, SAMPLE_BATCH_SIZE);
+    for (int i = 0; i < SAMPLE_BATCH_SIZE; i++) {
+      batch[i].writeBytes(batchBuffer + i * SAMPLE_BYTE_SIZE);
+    }
+  } 
+
+  udpServer.beginPacket(clientIP, CLIENT_UDP_PORT);
+  udpServer.write((uint8_t*)batchBuffer, SAMPLE_BATCH_SIZE * SAMPLE_BYTE_SIZE);
+  udpServer.endPacket();
 
 };
 
@@ -140,10 +145,14 @@ void WiFiUDP_AP::handleMessage(const Message& msg) {
       case MessageType::HEARTBEAT : {
         updateConnectionStatus(true);
         lastHeartbeat = millis();
-        printDebug(String("HEARTBEAT RECIEVED at: ") + lastHeartbeat);
+        printDebugTelemetry(String("HEARTBEAT RECIEVED at: ") + lastHeartbeat);
         break;
       }
-      // OTHER CASES IN EXPANSION
+      
+      case MessageType::CONTROL : {
+        // HANDLE STATE
+        break;
+      }
 
       case MessageType::EMPTY:
         // MAYBE DO SOMETHING 

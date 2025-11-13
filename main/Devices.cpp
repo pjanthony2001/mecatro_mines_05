@@ -221,13 +221,18 @@ void DEVICE_DATA::writeBytes(uint8_t *dataBuffer) {
   }
 
   if ((fmt >> 4) & 1) {
-    memcpy(dataBuffer + curr_idx, &leftEncoderData, 2);
-    curr_idx += 2;
+    memcpy(dataBuffer + curr_idx, &leftEncoderData, 4);
+    curr_idx += 4;
   }
 
   if ((fmt >> 3) & 1) {
-    memcpy(dataBuffer + curr_idx, &rightEncoderData, 2);
-    curr_idx += 2;  
+    memcpy(dataBuffer + curr_idx, &rightEncoderData, 4);
+    curr_idx += 4;  
+  }
+
+  if ((fmt >> 2) & 1) {
+    memcpy(dataBuffer + curr_idx, &float_1, 4);
+    curr_idx += 4;  
   }
   
 }

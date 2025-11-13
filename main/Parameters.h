@@ -41,12 +41,16 @@ constexpr int computeDataSize(const uint8_t& fmt) {
 
   int total = 0;
 
+  if ((fmt >> 2) & 1) {
+    total += 4;
+  }
+
   if ((fmt >> 3) & 1) {
-    total += 2;
+    total += 4;
   }
 
   if ((fmt >> 4) & 1) {
-    total += 2;
+    total += 4;
   }
 
   if ((fmt >> 5) & 1) {
@@ -61,17 +65,18 @@ constexpr int computeDataSize(const uint8_t& fmt) {
     total += 4;
   }
 
+
   return total;
 }
 
-/// DEVICE SAMPLE STRUCTURE : [sampleTime][gyroData][accelData][leftEncoder][rightEncoder][0][0][0]
+/// DEVICE SAMPLE STRUCTURE : [sampleTime][gyroData][accelData][leftEncoder][rightEncoder][float_1][0][0]
 
-constexpr uint8_t DEVICE_SAMPLE_FMT = 0b10011000;
+constexpr uint8_t DEVICE_SAMPLE_FMT = 0b10010100;
 constexpr int SAMPLE_BYTE_SIZE = computeDataSize(DEVICE_SAMPLE_FMT);
 
 
-constexpr char16_t SAMPLE_BATCH_SIZE = 50;
-constexpr char16_t BUFFER_SIZE = 400;
+constexpr char16_t SAMPLE_BATCH_SIZE = 30;
+constexpr char16_t BUFFER_SIZE = 250;
 
 constexpr  char* SSID = "Group5Mecatro";
 constexpr  char* PASSWORD = "PASSWORD45678";
@@ -79,7 +84,7 @@ constexpr  char* PASSWORD = "PASSWORD45678";
 constexpr int LOCAL_UDP_PORT = 1234;
 constexpr int CLIENT_UDP_PORT = 1234;
 
-constexpr unsigned int MESSAGE_INTERVAL = 2000; // in milliseconds, the interval to check messages, should be more than is sent by the client
+constexpr unsigned int MESSAGE_INTERVAL = 500; // in milliseconds, the interval to check messages, should be more than is sent by the client
 constexpr unsigned int CONTROL_INTERVAL = 10; // in milliseconds, the interval to update control commands if necessary, and maybe sensor data is logged??
 constexpr float SAMPLE_INTERVAL = 5; // in milliseconds, the interval to check my sampling devices (The highest ODR is 800Hz, but 400Hz is okay.)
 
@@ -91,12 +96,12 @@ constexpr int MAX_MESSAGE_DATA_SIZE = 32; // in bytes
 constexpr int MAX_MESSAGE_SIZE = MAX_MESSAGE_DATA_SIZE + 2; //to account for the type byte and length byte
 
 // COMMUNICATION MODE
-constexpr CommMode commMode = CommMode::USB;
+constexpr CommMode commMode = CommMode::WIFI;
 
 // CONTROL PARAMETERS
 
 constexpr float g = 9.81;
-constexpr float d_i = 0.0915;
+constexpr float d_i = 0.08;
 constexpr float rho = 0.05;
 
 using namespace BLA;
